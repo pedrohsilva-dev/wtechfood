@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WTechFood Solutions</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#D90429',
+                        primaryDim: '#7A0512',
+                        dark: '#0A0A0A',
+                        dark2: '#141414',
+                        dark3: '#1C1C1C',
+                        line: '#2A2A2A'
+                    },
+                    fontFamily: {
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        body: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Ambient circuit backdrop, tiled from the brand-matched SVG */
+        #circuit-layer {
+            position: fixed;
+            inset: 0;
+            background-image: url('/static/assets/circuit.svg');
+            background-size: 240px 240px;
+            opacity: 0.07;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Cursor-following spotlight */
+        #glass {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            pointer-events: none;
+            backdrop-filter: blur(20px);
+            background: rgba(217, 4, 41, 0.03);
+            border: 1px solid rgba(217, 4, 41, 0.12);
+            box-shadow:
+                0 0 140px rgba(217, 4, 41, 0.35),
+                inset 0 0 100px rgba(255, 255, 255, 0.04);
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            transition: opacity .3s;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #glass { display: none; }
+        }
+
+        /* Spotlight is a desktop-hover affordance; disable on touch/coarse pointers */
+        @media (hover: none) and (pointer: coarse) {
+            #glass { display: none; }
+        }
+
+        .card-hover {
+            transition: border-color .25s ease, transform .25s ease;
+        }
+        .card-hover:hover {
+            border-color: #D90429;
+            transform: translateY(-4px);
+        }
+
+        .trace-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #D90429, transparent);
+            opacity: .5;
+        }
+
+        [data-aos] {
+            transition-timing-function: cubic-bezier(0.2, 0.65, 0.3, 1) !important;
+        }
+
+        /* Interactive snack badge: flips from a lanche icon to a served plate */
+        .snack-badge {
+            position: absolute;
+            top: -18px;
+            right: -12px;
+            width: 64px;
+            height: 64px;
+            z-index: 20;
+            perspective: 700px;
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .snack-badge-ring {
+            position: absolute;
+            inset: -6px;
+            border-radius: 9999px;
+            border: 1px solid rgba(217, 4, 41, 0.4);
+            animation: snackPulse 2.4s ease-out infinite;
+        }
+
+        .snack-badge-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform .6s cubic-bezier(0.2, 0.65, 0.3, 1);
+        }
+
+        .snack-badge:hover .snack-badge-inner,
+        .snack-badge.is-flipped .snack-badge-inner {
+            transform: rotateY(180deg);
+        }
+
+        .snack-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+        }
+
+        .snack-front {
+            background: #141414;
+            border: 1px solid #D90429;
+        }
+
+        .snack-back {
+            background: #D90429;
+            transform: rotateY(180deg);
+        }
+
+        @keyframes snackPulse {
+            0% { box-shadow: 0 0 0 0 rgba(217, 4, 41, 0.35); opacity: 1; }
+            70% { box-shadow: 0 0 0 14px rgba(217, 4, 41, 0); opacity: 0; }
+            100% { box-shadow: 0 0 0 0 rgba(217, 4, 41, 0); opacity: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .snack-badge-ring { animation: none; }
+        }
+
+        @media (min-width: 640px) {
+            .snack-badge {
+                top: -22px;
+                right: -18px;
+                width: 84px;
+                height: 84px;
+            }
+        }
+
+        /* Lanche + camera-flash illustration beside the hero panel (desktop only, see hidden lg:block) */
+        .lanche-scene {
+            position: absolute;
+            left: -108px;
+            top: 6%;
+            width: 130px;
+            height: 150px;
+            z-index: 15;
+        }
+
+        .lanche-burger {
+            animation: lancheBob 3.2s ease-in-out infinite;
+            transform-origin: 50% 80%;
+        }
+
+        .lanche-steam {
+            animation: steamRise 2.6s ease-in-out infinite;
+        }
+
+        .lanche-camera {
+            position: absolute;
+            top: 4px;
+            right: -6px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: camSnap 3.2s ease-in-out infinite;
+            transform-origin: 70% 70%;
+        }
+
+        .lanche-camera svg {
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+        }
+
+        .flash-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.9);
+            opacity: 0;
+            animation: flashPulse 3.2s ease-out infinite;
+        }
+
+        .flash-ring-2 {
+            animation-delay: .12s;
+        }
+
+        @keyframes lancheBob {
+            0%, 76%, 100% { transform: translateY(0); }
+            88% { transform: translateY(-4px); }
+        }
+
+        @keyframes steamRise {
+            0%, 100% { opacity: 0.55; transform: translateY(0); }
+            50% { opacity: 0.15; transform: translateY(-4px); }
+        }
+
+        @keyframes camSnap {
+            0%, 78%, 100% { transform: rotate(0deg) scale(1); }
+            83% { transform: rotate(-12deg) scale(1.05); }
+            87% { transform: rotate(5deg) scale(1); }
+            91% { transform: rotate(0deg) scale(1); }
+        }
+
+        @keyframes flashPulse {
+            0%, 79% { opacity: 0; transform: scale(0.3); }
+            82% { opacity: 0.95; transform: scale(1); }
+            92% { opacity: 0; transform: scale(1.8); }
+            100% { opacity: 0; transform: scale(1.8); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .lanche-burger, .lanche-steam, .lanche-camera, .flash-ring {
+                animation: none;
+            }
+        }
+
+        /* Mobile nav drawer */
+        #mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease;
+        }
+        #mobile-menu.open {
+            max-height: 340px;
+        }
+
+        .hamburger-line {
+            transition: transform .3s ease, opacity .3s ease;
+        }
+        #menu-toggle.open .line-top {
+            transform: translateY(6px) rotate(45deg);
+        }
+        #menu-toggle.open .line-mid {
+            opacity: 0;
+        }
+        #menu-toggle.open .line-bottom {
+            transform: translateY(-6px) rotate(-45deg);
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-white relative">
+
+    <div id="circuit-layer" aria-hidden="true"></div>
+    <div id="glass" aria-hidden="true"></div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-black/70 backdrop-blur border-b border-line" data-aos="fade-down" data-aos-duration="600">
+        <div class="max-w-7xl mx-auto flex justify-between items-center h-16 sm:h-20 px-4 sm:px-6 lg:px-8">
+
+            <a href="#" class="flex items-center gap-2 sm:gap-3">
+                <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-lg bg-dark2 border border-line flex items-center justify-center overflow-hidden shrink-0">
+                    <img src="/static/assets/brand.png" alt="WTechFood Solutions" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col leading-tight">
+                    <span class="font-display font-semibold text-sm sm:text-base">
+                        <span class="text-white">Wtech</span><span class="text-primary">Food</span>
+                    </span>
+                    <span class="text-gray-500 text-[9px] sm:text-[11px] tracking-[0.2em] uppercase">Solutions</span>
+                </div>
+            </a>
+
+            <div class="hidden lg:flex gap-10 text-sm text-gray-400">
+                <a href="#" class="hover:text-white transition">Home</a>
+                <a href="#servicos" class="hover:text-white transition">Serviços</a>
+                <a href="#sobre" class="hover:text-white transition">Quem somos</a>
+                <a href="#contato" class="hover:text-white transition">Contato</a>
+            </div>
+
+            <button class="hidden lg:inline-block bg-primary text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-red-700 transition">
+                Seja nosso cliente
+            </button>
+
+            <!-- Mobile hamburger -->
+            <button id="menu-toggle" aria-label="Abrir menu" aria-expanded="false" class="lg:hidden w-9 h-9 flex flex-col items-center justify-center gap-[5px]">
+                <span class="hamburger-line line-top w-6 h-[2px] bg-white rounded-full"></span>
+                <span class="hamburger-line line-mid w-6 h-[2px] bg-white rounded-full"></span>
+                <span class="hamburger-line line-bottom w-6 h-[2px] bg-white rounded-full"></span>
+            </button>
+        </div>
+
+        <!-- Mobile menu drawer -->
+        <div id="mobile-menu" class="lg:hidden border-t border-line bg-black/90">
+            <div class="flex flex-col px-4 sm:px-6 py-4 gap-1 text-sm text-gray-300">
+                <a href="#" class="py-3 border-b border-line/60">Home</a>
+                <a href="#servicos" class="py-3 border-b border-line/60">Serviços</a>
+                <a href="#sobre" class="py-3 border-b border-line/60">Quem somos</a>
+                <a href="#contato" class="py-3">Contato</a>
+                <button class="bg-primary text-sm font-medium px-5 py-3 rounded-lg hover:bg-red-700 transition mt-3 w-full">
+                    Seja nosso cliente
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative pt-28 pb-16 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <div data-aos="fade-right" data-aos-duration="700">
+                <span class="inline-flex items-center gap-2 text-primary text-xs uppercase tracking-[0.25em] font-medium">
+                    <span class="w-6 h-px bg-primary"></span>
+                    Your Food technology
+                </span>
+
+                <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold mt-5 sm:mt-6 leading-[1.1] lg:leading-[1.05]">
+                    Gestão de restaurantes,
+                    <span class="text-primary">automatizada.</span>
+                </h1>
+
+                <p class="text-gray-400 mt-5 sm:mt-7 text-base sm:text-lg max-w-md">
+                    Pedidos, estoque, financeiro e atendimento em uma única
+                    plataforma. Menos planilhas, mais tempo para cozinhar.
+                </p>
+
+                <div class="flex flex-wrap gap-3 sm:gap-4 mt-8 sm:mt-10" data-aos="fade-up" data-aos-delay="200">
+                    <button class="bg-primary px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-medium hover:bg-red-700 transition w-full sm:w-auto">
+                        Começar agora
+                    </button>
+                    <button class="border border-line px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-medium hover:border-primary transition w-full sm:w-auto">
+                        Saiba mais
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 mt-12 sm:mt-14" data-aos="fade-up" data-aos-delay="300">
+                    <div>
+                        <div class="font-display text-xl sm:text-2xl font-semibold">
+                            Cardapios
+                        </div>
+                        <div class="text-gray-500 text-sm mt-1">Agilidade e Facilidade em gerenciar seus Cardapios</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-xl sm:text-2xl font-semibold">Parceria com a BeeFOOD</div>
+                        <div class="text-gray-500 text-sm mt-1">Sistema de gerenciamneto de cardapios digitais, integrado com o IFOOD</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-xl sm:text-2xl font-semibold">Tecnologia para seu Restaurante/Lanchonete</div>
+                        <div class="text-gray-500 text-sm mt-1">Suporte dedicado, para manter qualidade desde o hardware até o software do seu negócio</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative mt-4 lg:mt-0" data-aos="fade-left" data-aos-duration="700" data-aos-delay="150">
+
+                <!-- animated illustration: a lanche being "photographed" — desktop only, needs the extra side gutter -->
+                <div class="lanche-scene hidden lg:block" aria-hidden="true" data-aos="fade-right" data-aos-delay="500">
+                    <svg class="lanche-burger" width="112" height="112" viewBox="0 0 100 100" fill="none">
+                        <ellipse cx="50" cy="82" rx="34" ry="6" fill="#000000" opacity="0.35"/>
+                        <path d="M20 46c0-12 13-21 30-21s30 9 30 21" fill="none" stroke="#D90429" stroke-width="3.2" stroke-linecap="round"/>
+                        <path d="M17 46h66a3 3 0 0 1 2.9 3.7l-1.6 6.4A5 5 0 0 1 79.5 60h-59a5 5 0 0 1-4.8-3.9l-1.6-6.4A3 3 0 0 1 17 46Z" fill="none" stroke="#D90429" stroke-width="3.2" stroke-linejoin="round"/>
+                        <path d="M22 60l6.5 12.5A5 5 0 0 0 33 75h34a5 5 0 0 0 4.5-2.5L78 60" fill="none" stroke="#D90429" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M27 46c.8-2.6 2.6-4.2 4.5-4.2M46 41.6c2 0 3.9 1.6 4.6 4.2M60 41.9c2 0 3.7 1.5 4.4 3.9" stroke="#D90429" stroke-width="2.4" stroke-linecap="round"/>
+                        <path class="lanche-steam" d="M40 30c-3-3-3-6 0-9M50 27c-3-3-3-6 0-9M60 30c-3-3-3-6 0-9" stroke="#D90429" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+                    </svg>
+
+                    <div class="lanche-camera">
+                        <span class="flash-ring"></span>
+                        <span class="flash-ring flash-ring-2"></span>
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2.5" y="7" width="19" height="13" rx="2.4" fill="#D90429" stroke="#D90429"/>
+                            <path d="M8 7l1.6-2.6A1.8 1.8 0 0 1 11.1 3.5h1.8a1.8 1.8 0 0 1 1.5.9L16 7" stroke="#D90429"/>
+                            <circle cx="12" cy="13.5" r="4" fill="#0A0A0A" stroke="#0A0A0A"/>
+                            <circle cx="12" cy="13.5" r="1.6" fill="#D90429" stroke="none"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- interactive snack badge: hover/tap flips a lanche into a served plate -->
+                <button type="button" class="snack-badge" aria-label="Passe o mouse para ver o prato pronto" data-aos="zoom-in" data-aos-delay="550">
+                    <span class="snack-badge-ring"></span>
+                    <span class="snack-badge-inner">
+                        <span class="snack-face snack-front">
+                            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D90429" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 sm:w-[34px] sm:h-[34px]">
+                                <path d="M3 10.5C3 8 6 6 12 6s9 2 9 4.5" />
+                                <path d="M2.5 10.5h19a1 1 0 0 1 1 1.2l-.6 2.3a2 2 0 0 1-1.94 1.5H4.04a2 2 0 0 1-1.94-1.5l-.6-2.3a1 1 0 0 1 1-1.2Z" />
+                                <path d="M4 15.5 5 18a2 2 0 0 0 1.9 1.5h10.2A2 2 0 0 0 19 18l1-2.5" />
+                                <path d="M8.5 10.5c.3-1 1-1.6 1.7-1.6M12.5 8.9c.8 0 1.5.6 1.8 1.6" />
+                            </svg>
+                        </span>
+                        <span class="snack-face snack-back">
+                            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-7 h-7 sm:w-[38px] sm:h-[38px]">
+                                <circle cx="12" cy="13" r="7.2" />
+                                <circle cx="12" cy="13" r="3.4" />
+                                <path d="M4 4.5v4M4 4.5c-1 0-1.6.6-1.6 1.6S3 7.7 4 7.7" />
+                                <path d="M20 4.5v11.5c0 1-.8 1.3-1.6 1"/>
+                                <path d="M20 4.5c-.9 0-1.4.5-1.4 1.6v2.2c0 .8.5 1.3 1.4 1.3" />
+                            </svg>
+                        </span>
+                    </span>
+                </button>
+
+                <div class="rounded-3xl bg-dark2 border border-line p-4 sm:p-6 shadow-2xl relative overflow-hidden">
+                    <img src="/static/assets/foods.webp" alt="" class="w-full h-auto rounded-2xl">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="trace-divider max-w-7xl mx-auto"></div>
+
+    <!-- Recursos -->
+    <section id="servicos" class="py-16 sm:py-20 lg:py-24 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="max-w-xl" data-aos="fade-up">
+                <span class="text-primary text-xs uppercase tracking-[0.25em] font-medium">Serviços</span>
+                <h2 class="font-display text-3xl sm:text-4xl font-semibold mt-4">
+                    Tudo que seu restaurante precisa
+                </h2>
+                <p class="text-gray-400 mt-4">
+                    Ferramentas pensadas para o dia a dia da cozinha e do salão,
+                    com integração simples e suporte próximo.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-12 sm:mt-16">
+
+                <div class="card-hover bg-dark2 rounded-2xl p-6 sm:p-8 border border-line" data-aos="fade-up" data-aos-delay="0">
+                    <div class="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center mb-5">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D90429" stroke-width="1.8"><path d="M12 2v20M12 2c-2 3-2 6 0 9M12 2c2 3 2 6 0 9M8 11v11M16 11v11" stroke-linecap="round"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Gestão de Cardapio</h3>
+                    <p class="text-gray-400 mt-3 text-sm leading-relaxed">
+                        Centralize Cardapio do salão, delivery e balcão em um só painel, em tempo real.
+                    </p>
+                </div>
+
+                <div class="card-hover bg-dark2 rounded-2xl p-6 sm:p-8 border border-line" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center mb-5">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D90429" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Integração com iFood</h3>
+                    <p class="text-gray-400 mt-3 text-sm leading-relaxed">
+                        Conecte-se aos principais apps de delivery e gerencie tudo sem trocar de tela.
+                    </p>
+                </div>
+
+                <div class="card-hover bg-dark2 rounded-2xl p-6 sm:p-8 border border-line" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center mb-5">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D90429" stroke-width="1.8"><path d="M3 12l4-8 4 6 3-4 7 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Controle do seu restaurante</h3>
+                    <p class="text-gray-400 mt-3 text-sm leading-relaxed">
+                        Otimização do resultado de vendas do seu restaurante
+                    </p>
+                </div>
+
+                <div class="card-hover bg-dark2 rounded-2xl p-6 sm:p-8 border border-line" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center mb-5">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D90429" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Suporte Tecnico onde estiver</h3>
+                    <p class="text-gray-400 mt-3 text-sm leading-relaxed">
+                        Acompanhar sua operação, onde estiver.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="trace-divider max-w-7xl mx-auto"></div>
+
+    <!-- CTA -->
+    <section id="contato" class="py-16 sm:py-20 lg:py-24 relative z-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
+            <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-semibold">
+                Pronto para modernizar seu restaurante?
+            </h2>
+            <p class="text-gray-400 mt-4">
+                Fale com nosso time e veja a plataforma funcionando no seu negócio.
+            </p>
+            <button class="bg-primary px-8 py-4 rounded-xl font-medium hover:bg-red-700 transition mt-8 w-full sm:w-auto">
+                Entre em contato
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="sobre" class="border-t border-line py-10 sm:py-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between flex-col lg:flex-row gap-6" data-aos="fade-up">
+            <div>
+                <h2 class="font-display text-xl font-semibold">
+                    Wtech<span class="text-primary">Food</span> Solutions
+                </h2>
+                <p class="text-gray-500 mt-2 text-sm">
+                    Tecnologia para alimentação.
+                </p>
+            </div>
+            <div class="text-gray-500 text-sm lg:self-center">
+                © 2026 WTechFood Solutions
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 700,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 80
+        });
+
+        const glass = document.getElementById("glass");
+        window.addEventListener("mousemove", (e) => {
+            glass.style.left = e.clientX + "px";
+            glass.style.top = e.clientY + "px";
+        });
+
+        // tap-to-flip for touch devices (hover has no equivalent there)
+        const snackBadge = document.querySelector(".snack-badge");
+        if (snackBadge) {
+            snackBadge.addEventListener("click", () => {
+                snackBadge.classList.toggle("is-flipped");
+            });
+        }
+
+        // mobile menu toggle
+        const menuToggle = document.getElementById("menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener("click", () => {
+                const isOpen = mobileMenu.classList.toggle("open");
+                menuToggle.classList.toggle("open", isOpen);
+                menuToggle.setAttribute("aria-expanded", String(isOpen));
+            });
+
+            // close the drawer after tapping a link
+            mobileMenu.querySelectorAll("a").forEach((link) => {
+                link.addEventListener("click", () => {
+                    mobileMenu.classList.remove("open");
+                    menuToggle.classList.remove("open");
+                    menuToggle.setAttribute("aria-expanded", "false");
+                });
+            });
+        }
+    </script>
+
+</body>
+
+</html>
