@@ -54,7 +54,7 @@
                 <a href="#contato" class="hover:text-white transition">Contato</a>
             </div>
 
-            <button class="hidden lg:inline-block bg-primary text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-red-700 transition">
+            <button onclick="alert('Bem vindo ao sistema, estamos projetando o sistema de gestão WtechFood, Sistema estará pronto em breve.');" class="hidden lg:inline-block bg-primary text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-red-700 transition">
                 Seja nosso cliente
             </button>
 
@@ -73,7 +73,7 @@
                 <a href="#servicos" class="py-3 border-b border-line/60">Serviços</a>
                 <a href="#sobre" class="py-3 border-b border-line/60">Quem somos</a>
                 <a href="#contato" class="py-3">Contato</a>
-                <button class="bg-primary text-sm font-medium px-5 py-3 rounded-lg hover:bg-red-700 transition mt-3 w-full">
+                <button onclick="alert('Bem vindo ao sistema, estamos projetando o sistema de gestão WtechFood, Sistema estará pronto em breve.');" class="bg-primary text-sm font-medium px-5 py-3 rounded-lg hover:bg-red-700 transition mt-3 w-full">
                     Seja nosso cliente
                 </button>
             </div>
@@ -81,7 +81,7 @@
     </nav>
 
     <!-- Hero -->
-    <section class="relative pt-28 pb-16 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-24 overflow-hidden">
+    <section id="hero" class="relative pt-28 pb-16 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-24 overflow-hidden">
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center px-4 sm:px-6 lg:px-8 relative z-10">
 
             <div data-aos="fade-right" data-aos-duration="700">
@@ -100,13 +100,13 @@
                     plataforma. Menos planilhas, mais tempo para cozinhar.
                 </p>
 
-                <div class="flex flex-wrap gap-3 sm:gap-4 mt-8 sm:mt-10" data-aos="fade-up" data-aos-delay="200">
-                    <button class="bg-primary px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-medium hover:bg-red-700 transition w-full sm:w-auto">
+                <div class="flex flex-wrap gap-3 sm:gap-4 mt-8 sm:mt-10 pb-20" data-aos="fade-up" data-aos-delay="200">
+                    <a href="#contato" class="bg-primary px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-medium hover:bg-red-700 transition w-full sm:w-auto">
                         Começar agora
-                    </button>
-                    <button class="border border-line px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-medium hover:border-primary transition w-full sm:w-auto">
+                    </a>
+                    <a href="#servicos" class="border border-line px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-medium hover:border-primary transition w-full sm:w-auto">
                         Saiba mais
-                    </button>
+                    </a>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 mt-12 sm:mt-14" data-aos="fade-up" data-aos-delay="300">
@@ -176,7 +176,7 @@
                     </span>
                 </button>
 
-                <div class="rounded-3xl bg-dark2 border border-line p-4 sm:p-6 shadow-2xl relative overflow-hidden flex flex-wrap justify-center">
+                <div class="rounded-3xl bg-dark2 border border-line p-4 sm:p-6 shadow-2xl relative overflow-hidden flex flex-wrap justify-center py-4">
                     <div data-aos="fade-right" data-aos-duration="600">
                         <img src="./static/assets/foods.png" alt="Hamburger imagem representativa" class="max-w-64 max-h-64 rounded-2xl">
                     </div>
@@ -252,8 +252,69 @@
         </div>
     </section>
 
-    <div class="trace-divider max-w-7xl mx-auto"></div>
+<!-- Quem Somos -->
+<section id="sobre" class="py-24 bg-dark relative overflow-hidden relative z-10">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
 
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+            <!-- Foto -->
+            <div data-aos="fade-right" class="flex justify-center">
+                <div class="relative">
+
+                    <div class="absolute -inset-3 rounded-3xl bg-primary/20 blur-2xl"></div>
+
+                    <img
+                        src="./static/assets/wesley.jpg"
+                        alt="Wesley Messias"
+                        class="relative w-full max-w-md rounded-3xl border border-line shadow-2xl object-cover">
+
+                </div>
+            </div>
+
+            <!-- Texto -->
+            <div data-aos="fade-left">
+
+                <span class="text-primary uppercase tracking-[0.3em] text-sm font-semibold">
+                    QUEM SOMOS
+                </span>
+
+                <h2 class="font-display text-4xl lg:text-5xl font-bold mt-4">
+                    Wesley Messias
+                </h2>
+
+                <p class="mt-6 text-lg text-gray-300 leading-8">
+                    Profissional especializado em soluções tecnológicas para
+                    restaurantes, lanchonetes, hamburguerias e estabelecimentos
+                    do setor alimentício.
+                </p>
+
+                <p class="mt-6 text-gray-400 leading-8">
+                    A WTechFood Solutions nasceu para ajudar empresas a vender
+                    mais, organizar seus processos e reduzir custos através da
+                    tecnologia.
+                </p>
+
+                <p class="mt-4 text-gray-400 leading-8">
+                    Nosso trabalho inclui implantação de sistemas de gestão,
+                    integração com plataformas de delivery, cardápios digitais,
+                    suporte técnico e consultoria especializada para o seu
+                    negócio.
+                </p>
+
+                <div class="mt-10">
+                    <a href="#contato"
+                       class="inline-flex items-center px-7 py-4 rounded-xl bg-primary hover:bg-red-700 transition font-medium">
+                        Solicitar orçamento
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
     <!-- CTA -->
     <section id="contato" class="py-16 sm:py-20 lg:py-24 relative z-10">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
@@ -273,7 +334,7 @@
                 <a target="_blank" href="https://www.tiktok.com/@wtechfoodsolutions">
                     <img src="./static/assets/tiktok.svg" alt="">
                 </a>
-                <a target="_blank" href=""mailto:wtechfoodsolutions@gmail.com">
+                <a target="_blank" href="mailto:wtechfoodsolutions@gmail.com">
                     <img src="./static/assets/email.svg" alt="">
                 </a>
             </div>
