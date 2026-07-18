@@ -1,0 +1,245 @@
+* { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Ambient circuit backdrop, tiled from the brand-matched SVG */
+#circuit-layer {
+    position: fixed;
+    inset: 0;
+    background-image: url('./static/assets/circuit.svg');
+    background-size: 240px 240px;
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Cursor-following spotlight */
+#glass {
+    position: fixed;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    pointer-events: none;
+    backdrop-filter: blur(20px);
+    background: rgba(217, 4, 41, 0.03);
+    border: 1px solid rgba(217, 4, 41, 0.12);
+    box-shadow:
+        0 0 140px rgba(217, 4, 41, 0.35),
+        inset 0 0 100px rgba(255, 255, 255, 0.04);
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    transition: opacity .3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #glass { display: none; }
+}
+
+/* Spotlight is a desktop-hover affordance; disable on touch/coarse pointers */
+@media (hover: none) and (pointer: coarse) {
+    #glass { display: none; }
+}
+
+.card-hover {
+    transition: border-color .25s ease, transform .25s ease;
+}
+.card-hover:hover {
+    border-color: #D90429;
+    transform: translateY(-4px);
+}
+
+.trace-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #D90429, transparent);
+    opacity: .5;
+}
+
+[data-aos] {
+    transition-timing-function: cubic-bezier(0.2, 0.65, 0.3, 1) !important;
+}
+
+/* Interactive snack badge: flips from a lanche icon to a served plate */
+.snack-badge {
+    position: absolute;
+    top: -18px;
+    right: -12px;
+    width: 64px;
+    height: 64px;
+    z-index: 20;
+    perspective: 700px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.snack-badge-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 9999px;
+    border: 1px solid rgba(217, 4, 41, 0.4);
+    animation: snackPulse 2.4s ease-out infinite;
+}
+
+.snack-badge-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform .6s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+
+.snack-badge:hover .snack-badge-inner,
+.snack-badge.is-flipped .snack-badge-inner {
+    transform: rotateY(180deg);
+}
+
+.snack-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+}
+
+.snack-front {
+    background: #141414;
+    border: 1px solid #D90429;
+}
+
+.snack-back {
+    background: #D90429;
+    transform: rotateY(180deg);
+}
+
+@keyframes snackPulse {
+    0% { box-shadow: 0 0 0 0 rgba(217, 4, 41, 0.35); opacity: 1; }
+    70% { box-shadow: 0 0 0 14px rgba(217, 4, 41, 0); opacity: 0; }
+    100% { box-shadow: 0 0 0 0 rgba(217, 4, 41, 0); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .snack-badge-ring { animation: none; }
+}
+
+@media (min-width: 640px) {
+    .snack-badge {
+        top: -22px;
+        right: -18px;
+        width: 84px;
+        height: 84px;
+    }
+}
+
+/* Lanche + camera-flash illustration beside the hero panel (desktop only, see hidden lg:block) */
+.lanche-scene {
+    position: absolute;
+    left: -108px;
+    top: 6%;
+    width: 130px;
+    height: 150px;
+    z-index: 15;
+}
+
+.lanche-burger {
+    animation: lancheBob 3.2s ease-in-out infinite;
+    transform-origin: 50% 80%;
+}
+
+.lanche-steam {
+    animation: steamRise 2.6s ease-in-out infinite;
+}
+
+.lanche-camera {
+    position: absolute;
+    top: 4px;
+    right: -6px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: camSnap 3.2s ease-in-out infinite;
+    transform-origin: 70% 70%;
+}
+
+.lanche-camera svg {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+}
+
+.flash-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.9);
+    opacity: 0;
+    animation: flashPulse 3.2s ease-out infinite;
+}
+
+.flash-ring-2 {
+    animation-delay: .12s;
+}
+
+@keyframes lancheBob {
+    0%, 76%, 100% { transform: translateY(0); }
+    88% { transform: translateY(-4px); }
+}
+
+@keyframes steamRise {
+    0%, 100% { opacity: 0.55; transform: translateY(0); }
+    50% { opacity: 0.15; transform: translateY(-4px); }
+}
+
+@keyframes camSnap {
+    0%, 78%, 100% { transform: rotate(0deg) scale(1); }
+    83% { transform: rotate(-12deg) scale(1.05); }
+    87% { transform: rotate(5deg) scale(1); }
+    91% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes flashPulse {
+    0%, 79% { opacity: 0; transform: scale(0.3); }
+    82% { opacity: 0.95; transform: scale(1); }
+    92% { opacity: 0; transform: scale(1.8); }
+    100% { opacity: 0; transform: scale(1.8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lanche-burger, .lanche-steam, .lanche-camera, .flash-ring {
+        animation: none;
+    }
+}
+
+/* Mobile nav drawer */
+#mobile-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .35s ease;
+}
+#mobile-menu.open {
+    max-height: 340px;
+}
+
+.hamburger-line {
+    transition: transform .3s ease, opacity .3s ease;
+}
+#menu-toggle.open .line-top {
+    transform: translateY(6px) rotate(45deg);
+}
+#menu-toggle.open .line-mid {
+    opacity: 0;
+}
+#menu-toggle.open .line-bottom {
+    transform: translateY(-6px) rotate(-45deg);
+}

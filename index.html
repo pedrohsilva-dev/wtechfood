@@ -13,279 +13,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/brands.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
 
+    <link rel="stylesheet" href="style.css">
+
+
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tailwind.config.js"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#D90429',
-                        primaryDim: '#7A0512',
-                        dark: '#0A0A0A',
-                        dark2: '#141414',
-                        dark3: '#1C1C1C',
-                        line: '#2A2A2A'
-                    },
-                    fontFamily: {
-                        display: ['"Space Grotesk"', 'sans-serif'],
-                        body: ['Inter', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        * { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, .font-display {
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        /* Ambient circuit backdrop, tiled from the brand-matched SVG */
-        #circuit-layer {
-            position: fixed;
-            inset: 0;
-            background-image: url('./static/assets/circuit.svg');
-            background-size: 240px 240px;
-            opacity: 0.07;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Cursor-following spotlight */
-        #glass {
-            position: fixed;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            pointer-events: none;
-            backdrop-filter: blur(20px);
-            background: rgba(217, 4, 41, 0.03);
-            border: 1px solid rgba(217, 4, 41, 0.12);
-            box-shadow:
-                0 0 140px rgba(217, 4, 41, 0.35),
-                inset 0 0 100px rgba(255, 255, 255, 0.04);
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            transition: opacity .3s;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            #glass { display: none; }
-        }
-
-        /* Spotlight is a desktop-hover affordance; disable on touch/coarse pointers */
-        @media (hover: none) and (pointer: coarse) {
-            #glass { display: none; }
-        }
-
-        .card-hover {
-            transition: border-color .25s ease, transform .25s ease;
-        }
-        .card-hover:hover {
-            border-color: #D90429;
-            transform: translateY(-4px);
-        }
-
-        .trace-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #D90429, transparent);
-            opacity: .5;
-        }
-
-        [data-aos] {
-            transition-timing-function: cubic-bezier(0.2, 0.65, 0.3, 1) !important;
-        }
-
-        /* Interactive snack badge: flips from a lanche icon to a served plate */
-        .snack-badge {
-            position: absolute;
-            top: -18px;
-            right: -12px;
-            width: 64px;
-            height: 64px;
-            z-index: 20;
-            perspective: 700px;
-            background: transparent;
-            border: none;
-            padding: 0;
-            cursor: pointer;
-        }
-
-        .snack-badge-ring {
-            position: absolute;
-            inset: -6px;
-            border-radius: 9999px;
-            border: 1px solid rgba(217, 4, 41, 0.4);
-            animation: snackPulse 2.4s ease-out infinite;
-        }
-
-        .snack-badge-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            transition: transform .6s cubic-bezier(0.2, 0.65, 0.3, 1);
-        }
-
-        .snack-badge:hover .snack-badge-inner,
-        .snack-badge.is-flipped .snack-badge-inner {
-            transform: rotateY(180deg);
-        }
-
-        .snack-face {
-            position: absolute;
-            inset: 0;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backface-visibility: hidden;
-        }
-
-        .snack-front {
-            background: #141414;
-            border: 1px solid #D90429;
-        }
-
-        .snack-back {
-            background: #D90429;
-            transform: rotateY(180deg);
-        }
-
-        @keyframes snackPulse {
-            0% { box-shadow: 0 0 0 0 rgba(217, 4, 41, 0.35); opacity: 1; }
-            70% { box-shadow: 0 0 0 14px rgba(217, 4, 41, 0); opacity: 0; }
-            100% { box-shadow: 0 0 0 0 rgba(217, 4, 41, 0); opacity: 0; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .snack-badge-ring { animation: none; }
-        }
-
-        @media (min-width: 640px) {
-            .snack-badge {
-                top: -22px;
-                right: -18px;
-                width: 84px;
-                height: 84px;
-            }
-        }
-
-        /* Lanche + camera-flash illustration beside the hero panel (desktop only, see hidden lg:block) */
-        .lanche-scene {
-            position: absolute;
-            left: -108px;
-            top: 6%;
-            width: 130px;
-            height: 150px;
-            z-index: 15;
-        }
-
-        .lanche-burger {
-            animation: lancheBob 3.2s ease-in-out infinite;
-            transform-origin: 50% 80%;
-        }
-
-        .lanche-steam {
-            animation: steamRise 2.6s ease-in-out infinite;
-        }
-
-        .lanche-camera {
-            position: absolute;
-            top: 4px;
-            right: -6px;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: camSnap 3.2s ease-in-out infinite;
-            transform-origin: 70% 70%;
-        }
-
-        .lanche-camera svg {
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
-        }
-
-        .flash-ring {
-            position: absolute;
-            inset: 0;
-            border-radius: 9999px;
-            background: rgba(255,255,255,0.9);
-            opacity: 0;
-            animation: flashPulse 3.2s ease-out infinite;
-        }
-
-        .flash-ring-2 {
-            animation-delay: .12s;
-        }
-
-        @keyframes lancheBob {
-            0%, 76%, 100% { transform: translateY(0); }
-            88% { transform: translateY(-4px); }
-        }
-
-        @keyframes steamRise {
-            0%, 100% { opacity: 0.55; transform: translateY(0); }
-            50% { opacity: 0.15; transform: translateY(-4px); }
-        }
-
-        @keyframes camSnap {
-            0%, 78%, 100% { transform: rotate(0deg) scale(1); }
-            83% { transform: rotate(-12deg) scale(1.05); }
-            87% { transform: rotate(5deg) scale(1); }
-            91% { transform: rotate(0deg) scale(1); }
-        }
-
-        @keyframes flashPulse {
-            0%, 79% { opacity: 0; transform: scale(0.3); }
-            82% { opacity: 0.95; transform: scale(1); }
-            92% { opacity: 0; transform: scale(1.8); }
-            100% { opacity: 0; transform: scale(1.8); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .lanche-burger, .lanche-steam, .lanche-camera, .flash-ring {
-                animation: none;
-            }
-        }
-
-        /* Mobile nav drawer */
-        #mobile-menu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height .35s ease;
-        }
-        #mobile-menu.open {
-            max-height: 340px;
-        }
-
-        .hamburger-line {
-            transition: transform .3s ease, opacity .3s ease;
-        }
-        #menu-toggle.open .line-top {
-            transform: translateY(6px) rotate(45deg);
-        }
-        #menu-toggle.open .line-mid {
-            opacity: 0;
-        }
-        #menu-toggle.open .line-bottom {
-            transform: translateY(-6px) rotate(-45deg);
-        }
-    </style>
 </head>
 
 <body class="bg-dark text-white relative">
@@ -379,7 +117,7 @@
                         <div class="text-gray-500 text-sm mt-1">Agilidade e Facilidade em gerenciar seus Cardápios</div>
                     </div>
                     <div>
-                        <div class="font-display text-xl sm:text-2xl font-semibold">Parceria com a Beefood</div>
+                        <div class="font-display text-xl sm:text-2xl font-semibold">Parceria com a Beefood, Marketing.all, plataforma com super gestão de avaliação.</div>
                         <div class="text-gray-500 text-sm mt-1">Sistema de gerenciamento de cardápios digitais, integrado com o IFOOD</div>
                     </div>
                     <div>
@@ -438,8 +176,13 @@
                     </span>
                 </button>
 
-                <div class="rounded-3xl bg-dark2 border border-line p-4 sm:p-6 shadow-2xl relative overflow-hidden">
-                    <img src="./static/assets/foods.webp" alt="" class="w-full h-auto rounded-2xl">
+                <div class="rounded-3xl bg-dark2 border border-line p-4 sm:p-6 shadow-2xl relative overflow-hidden flex flex-wrap justify-center">
+                    <div data-aos="fade-right" data-aos-duration="600">
+                        <img src="./static/assets/foods.png" alt="Hamburger imagem representativa" class="max-w-64 max-h-64 rounded-2xl">
+                    </div>
+                    <div data-aos="fade-left" data-aos-duration="600">
+                        <img src="./static/assets/refil.png" alt="Refrigerante imagem representativa" class="max-w-64 max-h-64 rounded-2xl">
+                    </div>
                 </div>
             </div>
 
@@ -481,7 +224,7 @@
                     </div>
                     <h3 class="text-lg font-semibold">Integração com iFood</h3>
                     <p class="text-gray-400 mt-3 text-sm leading-relaxed">
-                        Conecte-se aos principais apps de delivery e gerencie tudo sem trocar de tela.
+                        Conecte-se aos principais apps de delivery e gerencie tudo sem trocar de tela, gestão de IFood para alavancar suas vendas com algoritimos do IFood.
                     </p>
                 </div>
 
@@ -517,14 +260,114 @@
             <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-semibold">
                 Pronto para modernizar seu restaurante?
             </h2>
-            <p class="text-gray-400 mt-4">
-                Fale com nosso time e veja a plataforma funcionando no seu negócio.
-            </p>
-            <button class="bg-primary px-8 py-4 rounded-xl font-medium hover:bg-red-700 transition mt-8 w-full sm:w-auto">
-                Entre em contato
-            </button>
+            <div class="flex justify-center my-4 gap-2">
+                <a target="_blank" href="https://wa.link/7a9ho2">
+                    <img src="./static/assets/whatsapp.svg" alt="">
+                </a>
+                <a target="_blank" href="https://www.facebook.com/profile.php?id=61576527594929">
+                    <img src="./static/assets/facebook.svg" alt="">
+                </a>
+                <a target="_blank" href="https://www.instagram.com/wtechfoodsolutions/">
+                    <img src="./static/assets/instagram.svg" alt="">
+                </a>
+                <a target="_blank" href="https://www.tiktok.com/@wtechfoodsolutions">
+                    <img src="./static/assets/tiktok.svg" alt="">
+                </a>
+                <a target="_blank" href=""mailto:wtechfoodsolutions@gmail.com">
+                    <img src="./static/assets/email.svg" alt="">
+                </a>
+            </div>
+
         </div>
+       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <form action="https://formsubmit.co/wtechfoodsolutions@gmail.com"
+          method="POST"
+          class="bg-dark2 border border-line rounded-3xl p-8 lg:p-10 shadow-2xl space-y-6">
+
+        <div class="text-center mb-8">
+            <span class="text-primary uppercase tracking-[0.25em] text-xs font-semibold">
+                Contato
+            </span>
+
+            <h2 class="font-display text-3xl lg:text-4xl font-semibold mt-3">
+                Entre em contato
+            </h2>
+
+            <p class="text-gray-400 mt-3">
+                Tire suas dúvidas ou solicite uma demonstração da plataforma.
+            </p>
+        </div>
+
+        <!-- Nome -->
+        <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+                Nome
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                required
+                placeholder="Digite seu nome"
+                class="w-full rounded-xl bg-dark border border-line px-5 py-4 text-white placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition"
+            >
+        </div>
+
+        <!-- Email -->
+        <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+                Email
+            </label>
+
+            <input
+                type="email"
+                name="email"
+                required
+                placeholder="Digite seu email"
+                class="w-full rounded-xl bg-dark border border-line px-5 py-4 text-white placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition"
+            >
+        </div>
+
+        <!-- Mensagem -->
+        <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+                Mensagem
+            </label>
+
+            <textarea
+                name="message"
+                rows="6"
+                required
+                placeholder="Como podemos ajudar?"
+                class="w-full rounded-xl bg-dark border border-line px-5 py-4 text-white placeholder:text-gray-500 resize-none focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition"
+            ></textarea>
+        </div>
+
+        <!-- Honeypot anti-spam -->
+        <input type="text" name="_honey" class="hidden">
+
+        <!-- Desabilita captcha -->
+        <input type="hidden" name="_captcha" value="false">
+
+        <!-- Assunto -->
+        <input type="hidden" name="_subject" value="Novo contato do site WTechFood Solutions">
+
+        <!-- Redirecionamento -->
+        <input type="hidden" name="_next" value="https://seudominio.com/obrigado">
+
+        <button
+            type="submit"
+            class="w-full bg-primary hover:bg-red-700 text-white font-semibold py-4 rounded-xl transition duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40"
+        >
+            Enviar Mensagem
+        </button>
+
+    </form>
+
+</div>
     </section>
+
 
     <!-- Footer -->
     <footer id="sobre" class="border-t border-line py-10 sm:py-12 relative z-10">
